@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report a Lost Item - FindIt</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f3f5f7;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        /* width: 100%; */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 40px;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+      }
+
+      header .logo img {
+        width: 40vh;
+      }
+
+      nav a {
+        margin: 0 15px;
+        text-decoration: none;
+        color: #333;
+      }
+
+      nav a:hover {
+        color: blue;
+        transition: 0.8s;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        margin-top: 0;
+        color: #666;
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        margin: 30px 0 15px 0;
+        font-size: 19px;
+        font-weight: 600;
+        border-left: 4px solid #007bff;
+        padding-left: 10px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 35px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      textarea {
+        height: 120px;
+      }
+
+      .upload-box {
+        margin-top: 10px;
+        padding: 40px;
+        border: 2px dashed #c5c5c5;
+        text-align: center;
+        border-radius: 10px;
+        background: #fafafa;
+        cursor: pointer;
+      }
+
+      .upload-box:hover {
+        border-color: #007bff;
+      }
+
+      #preview {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+
+      #preview img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+
+      .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+        display: none;
+      }
+
+      button {
+        margin-top: 10vh;
+        margin-bottom: 10vh;
+        padding: 14px 26px;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 17px;
+        cursor: pointer;
+        float: right;
+      }
+
+      button:hover {
+        background: #005fcc;
+      }
+      /* Navbar links */
+      nav a {
+        margin: 0 15px;
+        text-decoration: none;
+        color: #333;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: 0.3s;
+      }
+
+      /* Hover effect */
+      nav a:hover {
+        background: #e0e0e0;
+      }
+
+      /* Active tab highlight */
+      nav a.active {
+        background: #0077ff;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(0, 119, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo"><img src="All img/Lost logo.png" /></div>
+      <nav>
+        <a href="Home.html">Home</a>
+        <a
+          class="tab active"
+          onclick="switchTab('Lostreport')"
+          href="Lostreport.html"
+          >Report Lost-item</a
+        >
+        <a href="Foundreport.html">Report Found-item</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </header>
+    <div class="container">
+      <h2>Report a Lost Item</h2>
+      <p class="subtitle">
+        Tell us about what you lost so we can help you find it.
+      </p>
+
+      <div class="section-title">Item Details</div>
+
+      <form id="lostForm">
+        <div class="grid">
+          <div>
+            <label>Item Name</label>
+            <input type="text" id="itemName" placeholder="Enter Item Name" />
+            <div class="error" id="errName">Item name is required</div>
+          </div>
+
+          <div>
+            <label>Category</label>
+            <select id="category">
+              <option value="">Select a category</option>
+              <option>Bags</option>
+              <option>Electronics</option>
+              <option>Clothing</option>
+              <option>Documents</option>
+              <option>Other</option>
+            </select>
+            <div class="error" id="errCategory">Please select a category</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>Date Lost</label>
+            <input type="date" id="dateLost" />
+            <div class="error" id="errDate">Please select a date</div>
+          </div>
+
+          <div>
+            <label>Last Seen Location</label>
+            <input
+              type="text"
+              id="location"
+              placeholder="📍Street, area, or venue"
+            />
+            <div class="error" id="errLocation">Location is required</div>
+          </div>
+        </div>
+
+        <label>Description</label>
+        <textarea
+          id="description"
+          placeholder="Color, size, serial number, special marks etc..."
+        ></textarea>
+        <div class="error" id="errDesc">Description is required</div>
+
+        <div class="section-title">Upload Photos</div>
+
+        <div class="upload-box" id="uploadBox">
+          Click to upload or drag files here
+        </div>
+        <input type="file" id="fileInput" multiple style="display: none" />
+
+        <!-- Photo Preview -->
+        <div id="preview"></div>
+
+        <div class="section-title">Contact Information</div>
+
+        <div class="grid">
+          <div>
+            <label>Your Name</label>
+            <input type="text" id="yourName" placeholder="👤Enter Your Name" />
+            <div class="error" id="errYourName">Your name is required</div>
+          </div>
+
+          <div>
+            <label>Email Address</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="📧Enter Your Email id"
+            />
+            <div class="error" id="errEmail">Valid email is required</div>
+          </div>
+        </div>
+
+        <label>Phone Number</label>
+        <input type="text" id="phone" placeholder="📞Enter Your Number" />
+        <div class="error" id="errPhone">Phone number is required</div>
+
+        <button type="submit">Submit Report</button>
+      </form>
+    </div>
+
+    <script>
+      // CLICK TO UPLOAD
+      document.getElementById("uploadBox").onclick = function () {
+        document.getElementById("fileInput").click();
+      };
+
+      // PREVIEW IMAGES
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          showImages(e.target.files);
+        });
+
+      // DRAG & DROP
+      let uploadBox = document.getElementById("uploadBox");
+
+      uploadBox.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        uploadBox.style.borderColor = "#007bff";
+      });
+
+      uploadBox.addEventListener("dragleave", function () {
+        uploadBox.style.borderColor = "#c5c5c5";
+      });
+
+      uploadBox.addEventListener("drop", function (e) {
+        e.preventDefault();
+        uploadBox.style.borderColor = "#c5c5c5";
+        showImages(e.dataTransfer.files);
+      });
+
+      // SHOW PREVIEW IMAGES
+      function showImages(files) {
+        let preview = document.getElementById("preview");
+        preview.innerHTML = "";
+
+        [...files].forEach((file) => {
+          let reader = new FileReader();
+          reader.onload = function (e) {
+            let img = document.createElement("img");
+            img.src = e.target.result;
+            preview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // FORM VALIDATION
+      document
+        .getElementById("lostForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          let error = false;
+
+          function showError(id, inputId) {
+            const field = document.getElementById(inputId).value.trim();
+            const err = document.getElementById(id);
+
+            if (!field) {
+              err.style.display = "block";
+              error = true;
+            } else {
+              err.style.display = "none";
+            }
+          }
+
+          showError("errName", "itemName");
+          showError("errCategory", "category");
+          showError("errDate", "dateLost");
+          showError("errLocation", "location");
+          showError("errDesc", "description");
+          showError("errYourName", "yourName");
+          showError("errPhone", "phone");
+
+          const email = document.getElementById("email");
+          if (!email.value.includes("@") || !email.value.includes(".")) {
+            document.getElementById("errEmail").style.display = "block";
+            error = true;
+          } else {
+            document.getElementById("errEmail").style.display = "none";
+          }
+
+          if (!error) {
+            let item = {
+              name: document.getElementById("itemName").value,
+              location: document.getElementById("location").value,
+              date: document.getElementById("dateLost").value,
+              img:
+                document.querySelector("#preview img")?.src ||
+                "All img/default.png",
+              desc:
+                document.getElementById("description").value ||
+                "No description",
+              category: document.getElementById("category").value || "-",
+              id: "ID-" + Math.floor(Math.random() * 10000), // Random ID
+              reward: "₹" + Math.floor(Math.random() * 500), // Random reward
+              ownerName: document.getElementById("yourName").value,
+              ownerEmail: document.getElementById("email").value,
+              ownerPhone: document.getElementById("phone").value,
+
+              userId: document.getElementById("email").value
+            };
+
+            let lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+            lostItems.push(item);
+            localStorage.setItem("lostItems", JSON.stringify(lostItems));
+
+            alert("Your lost item report has been submitted successfully!");
+            window.location.href = "Lost.html";
+          }
+        });
+      // TAB SWITCH
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((btn) => btn.classList.remove("active"));
+        document
+          .querySelectorAll(".tabContent")
+          .forEach((c) => c.classList.remove("active"));
+
+        document
+          .querySelector(`[onclick="switchTab('${tab}')"]`)
+          .classList.add("active");
+        document.getElementById(tab).classList.add("active");
+      }
+    </script>
+  </body>
+</html>

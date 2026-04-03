@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | Lost & Found</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .avatar-box {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      text-align: center;
+    }
+
+    .avatar-list {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .avatar-list img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .avatar-list img:hover {
+      border: 2px solid blue;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="login-wrapper">
+    <div class="login-card">
+
+      <h2>Create Account</h2>
+      <p class="login-sub">Sign up to continue</p>
+
+      <div class="login-icon" onclick="openAvatarBox()">
+        <img id="previewImg" src="All img/2.jpg" />
+      </div>
+
+      <label>Full Name</label>
+      <input type="text" id="name" class="login-input" placeholder="Enter your full name" />
+      <p class="error" id="nameError"></p>
+
+      <label>Email</label>
+      <input type="email" id="email" class="login-input-email" placeholder="name@example.com" />
+      <p class="error" id="emailError"></p>
+      <label>Phone Number</label>
+      <input type="text" id="phone" class="login-input" placeholder="Enter Your Phone Number" />
+      <p class="error" id="phoneError"></p>
+
+      <label>Password</label>
+
+      <div class="password-box">
+        <input type="password" id="password" class="login-input-pass" placeholder="Enter your password" />
+
+        <span onclick="togglePassword('password')" class="eye-icon">
+          <img id="eye-password" src="All img/eye.png" width="20">
+        </span>
+      </div>
+
+      <p class="error" id="passwordError"></p>
+
+      <label>Confirm Password</label>
+
+      <div class="password-box">
+        <input type="password" id="confirmPassword" class="login-input-pass" placeholder="Re-enter your password" />
+
+        <span onclick="togglePassword('confirmPassword')" class="eye-icon">
+          <img id="eye-confirmPassword" src="All img/eye.png" width="20">
+        </span>
+      </div>
+
+      <p class="error" id="confirmError"></p>
+
+      <button class="login-btn" id="signupBtn">Sign Up</button>
+
+      <p class="signup-text">
+        Already have an account? <a href="Loginpage.html">Login</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Avatar Box -->
+  <div id="avatarBox" class="avatar-box">
+
+    <h3>Choose Profile Photo</h3>
+
+    <div class="avatar-list">
+
+      <img src="All img/1.jpg" onclick="selectAvatar(this.src)">
+      <img src="All img/2.jpg" onclick="selectAvatar(this.src)">
+      <img src="All img/3.jpg" onclick="selectAvatar(this.src)">
+      <img src="All img/4.jpg" onclick="selectAvatar(this.src)">
+      <img src="All img/5.jpg" onclick="selectAvatar(this.src)">
+
+    </div>
+
+    <button onclick="closeAvatarBox()">Close</button>
+  </div>
+  <!-- 🔵 JAVASCRIPT START -->
+  <script>
+    document
+      .getElementById("signupBtn")
+      .addEventListener("click", function () {
+        let name = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let phone = document.getElementById("phone").value.trim();
+        let password = document.getElementById("password").value;
+        let confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        let nameError = document.getElementById("nameError");
+        let emailError = document.getElementById("emailError");
+        let phoneError = document.getElementById("phoneError");
+        let passwordError = document.getElementById("passwordError");
+        let confirmError = document.getElementById("confirmError");
+
+        // Reset errors
+        nameError.textContent = "";
+        emailError.textContent = "";
+        phoneError.textContent = "";
+        passwordError.textContent = "";
+        confirmError.textContent = "";
+
+        let valid = true;
+
+        if (name === "") {
+          nameError.textContent = "Full name is required!";
+          valid = false;
+        }
+
+        if (!email.includes("@") || !email.includes(".")) {
+          emailError.textContent = "Enter a valid email!";
+          valid = false;
+        }
+        if (phone === "") {
+          phoneError.textContent = "Phone number is required!";
+          valid = false;
+        } else if (!/^[0-9]{10}$/.test(phone)) {
+          phoneError.textContent = "Enter a valid 10 digit number!";
+          valid = false;
+        }
+        if (password.length < 6) {
+          passwordError.textContent =
+            "Password must be at least 6 characters!";
+          valid = false;
+        }
+
+        if (confirmPassword !== password) {
+          confirmError.textContent = "Passwords do not match!";
+          valid = false;
+        }
+
+        if (valid) {
+          alert("Signup Successful!");
+
+          // Save user data
+          localStorage.setItem("name", name);
+          localStorage.setItem("email", email);
+          localStorage.setItem("phone", phone);
+          localStorage.setItem("password", password);
+
+          // Login status
+          localStorage.setItem("loggedIn", "true");
+
+          window.location.href = "home.html";
+        }
+      });
+
+    // Passworld show 
+
+    function togglePassword(id) {
+      let input = document.getElementById(id);
+      let eyeIcon = document.getElementById("eye-" + id);
+
+      if (input.type === "password") {
+        input.type = "text";
+        eyeIcon.src = "All img/hidden.png";   // closed eye
+      } else {
+        input.type = "password";
+        eyeIcon.src = "All img/eye.png";      // open eye
+      }
+    }
+
+
+    function openAvatarBox() {
+      document.getElementById("avatarBox").style.display = "block";
+    }
+
+    function closeAvatarBox() {
+      document.getElementById("avatarBox").style.display = "none";
+    }
+
+    function selectAvatar(src) {
+      document.getElementById("previewImg").src = src;
+
+      // ✅ IMPORTANT LINE (ADD THIS)
+      localStorage.setItem("profileImage", src);
+
+      closeAvatarBox();
+    }
+  </script>
+  <!-- 🔵 JAVASCRIPT END -->
+</body>
+
+</html>

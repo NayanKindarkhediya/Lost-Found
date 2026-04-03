@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindIt - Found Items</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <img src="All img/Lost logo.png" />
+    </div>
+
+    <nav>
+      <a href="Home.html">Home</a>
+      <a href="Lost.html">Lost Item</a>
+      <a class="tab active" onclick="switchTab('Found')" href="Found.html">Found Item</a>
+      <a href="Profile.html">Profile</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="🔍 Search by item name (e.g., Keys, Wallet)" onkeyup="searchItem()" />
+      <input type="text" id="searchcity" placeholder="📍 City or Zip Code" onkeyup="searchCity()" />
+      <button class="search-btn">Search</button>
+    </div>
+
+    <div class="layout">
+      <aside class="filters">
+        <h3>Filters</h3>
+
+        <div class="filter-section">
+          <h4>Category</h4>
+          <label><input type="checkbox" checked /> Bags</label>
+          <label><input type="checkbox" /> Electronics</label>
+          <label><input type="checkbox" /> Clothing</label>
+          <label><input type="checkbox" /> Documents</label>
+          <label><input type="checkbox" /> Other</label>
+        </div>
+
+        <div class="filter-section">
+          <h4>Date Found</h4>
+          <select id="dateFilter">
+            <option>Any time</option>
+            <option>Past 24 hours</option>
+            <option>Past Week</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <h4>Color</h4>
+          <div id="colorFilter" class="colors">
+            <span class="color black" id="black"></span>
+            <span class="color gray" id="gray"></span>
+            <span class="color red" id="red"></span>
+            <span class="color blue" id="blue"></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="results" id="foundList">
+
+
+        <!-- MODAL -->
+
+        <div class="modal" id="itemModal">
+          <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">×</button>
+
+            <div class="modal-left">
+              <img id="modal-img" />
+              <div class="photo-badge">Photos</div>
+            </div>
+
+            <div class="modal-right">
+              <div class="tag-time">
+                <span id="modal-tag1"></span>
+                <span id="modal-time"></span>
+              </div>
+
+              <h2 id="modal-title"></h2>
+              <p id="modal-desc"></p>
+              <div class="modal-line"></div>
+
+              <div class="detail-grid">
+                <div class="detail-box">
+                  <label>Category</label>
+                  <p id="modal-category"></p>
+                </div>
+                <div class="detail-box">
+                  <label>Date Found</label>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <img src="All img/calendar (1).png" style="width:14px; height:14px;">
+                    <span id="modal-date"></span>
+                  </div>
+                </div>
+                <div class="detail-box">
+                  <label>Item ID</label>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <img src="All img/fingerprint.png" style="width:14px; height:14px;">
+                    <span id="modal-id"></span>
+                  </div>
+                </div>
+                <div class="detail-box">
+                  <label>Reward</label>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <img src="All img/dollar.png" style="width:20px; height:20px;">
+                    <p id="modal-reward" style="margin:0;"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="location-wrap">
+                <label>Location</label>
+                <div class="map-box" id="mapBox">
+                  <div class="map-location" id="modal-location"></div>
+                </div>
+              </div>
+
+              <button class="contact-btn">Contact Owner</button>
+
+              <div class="owner-info" id="owner-info">
+                <p><strong>Name:</strong> <span id="owner-name"></span></p>
+                <p><strong>Email:</strong> <span id="owner-email"></span></p>
+                <p><strong>Phone:</strong> <span id="owner-phone"></span></p>
+              </div>
+
+              <div class="share-row">
+                <span>Share this item</span>
+                <div class="share-icons">
+                  <a href="https://www.instagram.com" target="_blank">
+                    <img id="icon" src="All img/instagram.png" />
+                  </a>
+                  <a href="https://www.facebook.com" target="_blank">
+                    <img id="icon" src="All img/facebook.png" />
+                  </a>
+                  <a href="https://x.com" target="_blank">
+                    <img id="icon" src="All img/twitter.png" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- DELETE CONFIRM BOX -->
+        <div id="deleteModal" class="delete-modal">
+          <div class="delete-box">
+            <h3>Are you sure?</h3>
+            <p>This item will be permanently deleted.</p>
+
+            <div class="delete-actions">
+              <button id="confirmDelete" class="btn-delete">Delete</button>
+              <button onclick="closeDeleteModal()" class="btn-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <script>
+          function formatDate(dateString) {
+            let date = new Date(dateString);
+
+            return date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            });
+          }
+          const modal = document.getElementById("itemModal");
+
+          document.querySelectorAll(".details-btn").forEach((btn) => {
+            btn.onclick = () => {
+              const card = btn.closest(".item-card");
+
+              modal.style.display = "flex";
+
+              document.getElementById("modal-img").src = card.dataset.img;
+              document.getElementById("modal-tag1").textContent = card.dataset.tag1;
+              document.getElementById("modal-time").textContent = card.dataset.time;
+              document.getElementById("modal-title").textContent =
+                card.dataset.title;
+              document.getElementById("modal-desc").textContent = card.dataset.desc;
+              document.getElementById("modal-category").textContent =
+                card.dataset.category;
+              document.getElementById("modal-date").textContent = card.dataset.date;
+              document.getElementById("modal-id").textContent = card.dataset.id;
+              document.getElementById("modal-reward").textContent =
+                card.dataset.reward;
+              document.getElementById("modal-location").textContent =
+                card.dataset.location;
+              let mapBox = document.getElementById("mapBox");
+              let location = card.dataset.location;
+
+              mapBox.onclick = function () {
+                window.open(
+                  "https://www.google.com/maps/search/" +
+                  encodeURIComponent(location),
+                  "_blank",
+                );
+              };
+
+              document.getElementById("owner-name").textContent =
+                card.dataset.ownerName;
+              document.getElementById("owner-email").textContent =
+                card.dataset.ownerEmail;
+              document.getElementById("owner-phone").textContent =
+                card.dataset.ownerPhone;
+
+              document.getElementById("owner-info").style.display = "none";
+            };
+          });
+
+          document.querySelector(".contact-btn").onclick = () => {
+            const box = document.getElementById("owner-info");
+
+            box.style.display = box.style.display === "block" ? "none" : "block";
+          };
+
+          function closeModal() {
+            modal.style.display = "none";
+          }
+
+          window.onclick = (e) => {
+            if (e.target === modal) closeModal();
+          };
+
+          // TAB SWITCH
+          function switchTab(tab) {
+            document
+              .querySelectorAll(".tab")
+              .forEach((btn) => btn.classList.remove("active"));
+            document
+              .querySelectorAll(".tabContent")
+              .forEach((c) => c.classList.remove("active"));
+
+            document
+              .querySelector(`[onclick="switchTab('${tab}')"]`)
+              .classList.add("active");
+            document.getElementById(tab).classList.add("active");
+          }
+
+          // Search bar working
+
+          function searchItem() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let items = document.querySelectorAll(".item-card");
+
+            items.forEach(function (item) {
+              let name = item.querySelector("h3").textContent.toLowerCase();
+
+              if (name.includes(input)) {
+                item.style.display = "";
+              } else {
+                item.style.display = "none";
+              }
+            });
+          }
+
+          // Search city working
+
+          function searchCity() {
+            let input = document.getElementById("searchcity").value.toLowerCase();
+            let items = document.querySelectorAll(".item-card");
+
+            items.forEach(function (item) {
+              let name = item.querySelector("p").textContent.toLowerCase();
+
+              if (name.includes(input)) {
+                item.style.display = "";
+              } else {
+                item.style.display = "none";
+              }
+            });
+          }
+
+          // Found Items Show
+          let foundItems = JSON.parse(localStorage.getItem("foundItems")) || [];
+          let container = document.getElementById("foundList");
+
+          foundItems.forEach(function (item, index) {
+            let card = document.createElement("div");
+            card.className = "item-card";
+
+            // 🔥 FILTER DATA
+            card.dataset.category = item.category ? item.category.toLowerCase() : "";
+            // 🔥 COLOR DETECT (YAHI DALNA HAI)
+            let desc = (item.desc || "").toLowerCase();
+
+            let detectedColor = "";
+
+            // sirf exact color word detect
+            if (desc.includes("red")) detectedColor = "red";
+            else if (desc.includes("black")) detectedColor = "black";
+            else if (desc.includes("blue")) detectedColor = "blue";
+            else if (desc.includes("gray") || desc.includes("grey")) detectedColor = "gray";
+
+            card.dataset.color = detectedColor;
+            card.dataset.date = item.date ? Math.ceil((new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24)) : 0;
+
+            card.innerHTML = `
+            <img src="${item.img || ""}">
+            <div class="info">
+            <span class="foundtag">Found</span>
+            <h3>${item.name}</h3>
+           <p><img src="All img/placeholder.png" style="width: 15px;height: 15px;"> ${item.location}</p>
+           <p><img src="All img/calendar.png" style="width: 15px;height: 15px;"> Lost: ${formatDate(item.date)}</p>
+            </div>
+            <button class="details-btn">Details</button>
+            <button id="delete" onclick="openDeleteModal(${index})">Delete</button>`;
+
+            // Details button
+            card.querySelector(".details-btn").onclick = () => {
+              modal.style.display = "flex";
+              document.getElementById("modal-img").src = item.img;
+              document.getElementById("modal-tag1").textContent = "Found";
+              document.getElementById("modal-time").textContent = "Just now";
+              document.getElementById("modal-title").textContent = item.name;
+              document.getElementById("modal-desc").textContent = item.desc;
+              let category = item.category ? item.category.toLowerCase() : "";
+              let icon = "";
+
+              // category ke hisaab se icon set
+              if (category.includes("bag")) {
+                icon = "All img/bag.png";
+              }
+              else if (category.includes("electronic") || category.includes("phone")) {
+                icon = "All img/iphone.png";
+              }
+              else if (category.includes("document")) {
+                icon = "All img/document.png";
+              }
+              else if (category.includes("clothing")) {
+                icon = "All img/clothes.png";
+              }
+              else {
+                icon = "All img/other.png";
+              }
+
+              // final output (icon + text)
+              document.getElementById("modal-category").innerHTML =
+                `<img src="${icon}" style="width:16px; margin-right:5px;"> ${item.category}`;
+              document.getElementById("modal-date").textContent = formatDate(
+                item.date,
+              );
+              document.getElementById("modal-id").textContent = item.id;
+              document.getElementById("modal-reward").textContent = item.reward;
+              document.getElementById("modal-location").textContent = item.location;
+              let mapBox = document.getElementById("mapBox");
+              let location = item.location;
+
+              mapBox.onclick = function () {
+                window.open(
+                  "https://www.google.com/maps/search/" +
+                  encodeURIComponent(location),
+                  "_blank",
+                );
+              };
+              document.getElementById("owner-name").textContent = item.ownerName;
+              document.getElementById("owner-email").textContent = item.ownerEmail;
+              document.getElementById("owner-phone").textContent = item.ownerPhone;
+              document.getElementById("owner-info").style.display = "none";
+            };
+
+            container.prepend(card);
+          });
+
+          // Delete function
+          function deleteFoundItem(index) {
+            let foundItems = JSON.parse(localStorage.getItem("foundItems")) || [];
+            foundItems.splice(index, 1);
+            localStorage.setItem("foundItems", JSON.stringify(foundItems));
+            location.reload();
+          }
+
+
+          // color item 
+
+          let colors = document.querySelectorAll("#colorFilter .color");
+
+          colors.forEach(function (color) {
+            color.addEventListener("click", function () {
+
+              // sabka reset
+              colors.forEach(function (c) {
+                c.classList.remove("active");
+                c.style.borderColor = "#eee";
+              });
+
+              // current ka color lo
+              let bgColor = window.getComputedStyle(this).backgroundColor;
+
+              // active + same color border
+              this.classList.add("active");
+              this.style.border = "3px solid " + bgColor;
+
+              filterItems();
+            });
+          });
+
+
+          // 🔥 YAHAN PASTE KAR
+          function filterItems() {
+            let selectedColor = document.querySelector("#colorFilter .active");
+            let color = selectedColor ? selectedColor.id : "";
+
+            let date = document.getElementById("dateFilter").value;
+
+            let checkboxes = document.querySelectorAll(".filter-section input[type='checkbox']");
+            let selectedCategories = [];
+
+            checkboxes.forEach(cb => {
+              if (cb.checked) {
+                selectedCategories.push(cb.parentElement.textContent.trim().toLowerCase());
+              }
+            });
+
+            let items = document.querySelectorAll(".item-card");
+
+            items.forEach(item => {
+
+              let show = true;
+
+              let itemCategory = item.dataset.category;
+              let itemDate = parseInt(item.dataset.date);
+              let itemColor = item.dataset.color;
+
+              if (selectedCategories.length && !selectedCategories.includes(itemCategory)) {
+                show = false;
+              }
+
+              if (color && itemColor !== color) {
+                show = false;
+              }
+
+              if (date === "Past 24 hours" && itemDate > 1) {
+                show = false;
+              }
+
+              if (date === "Past Week" && itemDate > 7) {
+                show = false;
+              }
+
+              item.style.display = show ? "flex" : "none";
+            });
+          }
+
+          // checkbox
+          document.querySelectorAll("input[type='checkbox']").forEach(cb => {
+            cb.addEventListener("change", filterItems);
+          });
+
+          // date
+          document.getElementById("dateFilter").addEventListener("change", filterItems);
+
+
+          let deleteIndex = null;
+
+          // open modal
+          function openDeleteModal(index) {
+            deleteIndex = index;
+            document.getElementById("deleteModal").style.display = "flex";
+          }
+
+          // close modal
+          function closeDeleteModal() {
+            document.getElementById("deleteModal").style.display = "none";
+          }
+
+          // confirm delete
+          document.getElementById("confirmDelete").onclick = function () {
+            if (deleteIndex !== null) {
+              let foundItems = JSON.parse(localStorage.getItem("foundItems")) || [];
+              foundItems.splice(deleteIndex, 1);
+              localStorage.setItem("foundItems", JSON.stringify(foundItems));
+              location.reload();
+            }
+          };
+        </script>
+</body>
+
+</html>
