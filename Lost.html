@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FindIt - Lost Items</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .pagination {
+      text-align: center;
+    }
+
+    .pagination button {
+      margin: 5px;
+      padding: 8px 14px;
+      border: none;
+      background: #eee;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .pagination button:hover {
+      background: #ccc;
+    }
+
+    .pagination button.active {
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <img src="All img/Lost logo.png" />
+    </div>
+
+    <nav>
+      <a href="Home.html">Home</a>
+      <a class="tab active" onclick="switchTab('Lost')" href="Lost.html">Lost Item</a>
+      <a href="Found.html">Found Item</a>
+      <a href="Profile.html">Profile</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="🔍 Search by item name (e.g., Keys, Wallet)" onkeyup="searchItem()" />
+      <input type="text" id="searchcity" placeholder="📍 City or Zip Code" onkeyup="searchCity()" />
+      <button class="search-btn">Search</button>
+    </div>
+
+    <div class="layout">
+      <aside class="filters">
+        <h3>Filters</h3>
+
+        <div class="filter-section">
+          <h4>Category</h4>
+          <label><input type="checkbox" checked /> Bags</label>
+          <label><input type="checkbox" /> Electronics</label>
+          <label><input type="checkbox" /> Clothing</label>
+          <label><input type="checkbox" /> Documents</label>
+          <label><input type="checkbox" />Other</label>
+        </div>
+
+        <div class="filter-section">
+          <h4>Date Lost</h4>
+          <select id="dateFilter">
+            <option>Any time</option>
+            <option>Past 24 hours</option>
+            <option>Past Week</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <h4>Color</h4>
+          <div id="colorFilter" class="colors">
+            <span class="color black" id="black"></span>
+            <span class="color gray" id="gray"></span>
+            <span class="color red" id="red"></span>
+            <span class="color blue" id="blue"></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="results" id="lostList">
+        <div id="pagination" class="pagination"></div>
+      </main>
+
+
+      <div class="modal" id="itemModal">
+        <div class="modal-content">
+          <button class="close-btn" onclick="closeModal()">×</button>
+
+          <div class="modal-left">
+            <img id="modal-img" />
+            <div class="photo-badge">Photos</div>
+          </div>
+
+          <div class="modal-right">
+            <div class="tag-time">
+              <span id="modal-tag"></span>
+              <span id="modal-time"></span>
+            </div>
+
+            <h2 id="modal-title"></h2>
+            <p id="modal-desc"></p>
+            <div class="modal-line"></div>
+
+            <div class="detail-grid">
+              <div class="detail-box">
+                <label>Category</label>
+                <p id="modal-category"></p>
+              </div>
+              <div class="detail-box">
+                <label>Date Lost</label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <img src="All img/calendar (1).png" style="width:14px; height:14px;">
+                  <span id="modal-date"></span>
+                </div>
+              </div>
+              <div class="detail-box">
+                <label>Item ID</label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <img src="All img/fingerprint.png" style="width:14px; height:14px;">
+                  <span id="modal-id"></span>
+                </div>
+              </div>
+              <div class="detail-box">
+                <label>Reward</label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <img src="All img/dollar.png" style="width:20px; height:20px;">
+                  <p id="modal-reward" style="margin:0;"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="location-wrap">
+              <label>Location</label>
+              <div class="map-box" id="mapBox">
+                <div class="map-location" id="modal-location"></div>
+              </div>
+            </div>
+
+            <button class="contact-btn">Contact Owner</button>
+
+            <div class="owner-info" id="owner-info">
+              <p><strong>Name:</strong> <span id="owner-name"></span></p>
+              <p><strong>Email:</strong> <span id="owner-email"></span></p>
+              <p><strong>Phone:</strong> <span id="owner-phone"></span></p>
+            </div>
+
+            <div class="share-row">
+              <span>Share this item</span>
+              <div class="share-icons">
+                <a href="https://www.instagram.com" target="_blank">
+                  <img id="icon" src="All img/instagram.png" />
+                </a>
+                <a href="https://www.facebook.com" target="_blank">
+                  <img id="icon" src="All img/facebook.png" />
+                </a>
+                <a href="https://x.com" target="_blank">
+                  <img id="icon" src="All img/twitter.png" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="deleteModal" class="delete-modal">
+        <div class="delete-box">
+          <h3>Are you sure?</h3>
+          <p>This item will be permanently deleted.</p>
+
+          <div class="delete-actions">
+            <button id="confirmDelete" class="btn-delete">Delete</button>
+            <button onclick="closeDeleteModal()" class="btn-cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <script>
+    let currentPage = 1;
+    let itemsPerPage = 4;
+
+    // --- DATABASE FETCH START ---
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchItemsFromDB();
+    });
+
+    function fetchItemsFromDB() {
+        fetch('http://localhost:5000/get-items/lost')
+            .then(res => res.json())
+            .then(data => {
+                // Yahan data load ho raha hai
+                renderItems(data);
+            })
+            .catch(err => {
+                console.error("Error fetching items:", err);
+                let lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+                renderItems(lostItems);
+            });
+    }
+
+    function renderItems(itemsArray) {
+        let container = document.getElementById("lostList");
+        container.innerHTML = ""; 
+
+        itemsArray.forEach(function (item, index) {
+            let card = document.createElement("div");
+            card.className = "item-card";
+
+            // FILTER DATA
+            card.dataset.category = item.category ? item.category.toLowerCase() : "";
+            let desc = (item.description || item.desc || "").toLowerCase();
+
+            let detectedColor = "";
+            if (desc.includes("red")) detectedColor = "red";
+            else if (desc.includes("black")) detectedColor = "black";
+            else if (desc.includes("blue")) detectedColor = "blue";
+            else if (desc.includes("gray") || desc.includes("grey")) detectedColor = "gray";
+
+            card.dataset.color = detectedColor;
+            
+            let itemDateObj = item.date_report ? new Date(item.date_report) : new Date(item.date);
+            card.dataset.date = itemDateObj ? Math.ceil((new Date() - itemDateObj) / (1000 * 60 * 60 * 24)) : 0;
+
+            card.innerHTML = `
+                <img src="${item.image_data || item.img || "All img/default.png"}">
+                <div class="info">
+                    <span class="losttag">Lost</span>
+                    <h3>${item.item_name || item.name}</h3>
+                    <p><img src="All img/placeholder.png" style="width: 15px;height: 15px;"> ${item.location}</p>
+                    <p><img src="All img/calendar.png" style="width: 15px;height: 15px;"> Lost: ${formatDate(item.date_report || item.date)}</p>
+                </div>
+                <button class="details-btn">Details</button>
+                <button id="delete" onclick="openDeleteModal(${index})">Delete</button>`;
+
+            card.querySelector(".details-btn").onclick = () => {
+                modal.style.display = "flex";
+                document.body.style.overflow = "hidden";
+                document.getElementById("modal-img").src = item.image_data || item.img || "All img/googlemap.png";
+                document.getElementById("modal-tag").textContent = "Lost";
+                document.getElementById("modal-time").textContent = "Reported";
+                document.getElementById("modal-title").textContent = item.item_name || item.name;
+                document.getElementById("modal-desc").textContent = item.description || item.desc;
+                
+                let category = item.category ? item.category.toLowerCase() : "";
+                let icon = category.includes("bag") ? "All img/bag.png" : 
+                           category.includes("phone") ? "All img/iphone.png" :
+                           category.includes("document") ? "All img/document.png" :
+                           category.includes("clothing") ? "All img/clothes.png" : "All img/other.png";
+
+                document.getElementById("modal-category").innerHTML = `<img src="${icon}" style="width:16px; margin-right:5px;"> ${item.category}`;
+                document.getElementById("modal-date").textContent = formatDate(item.date_report || item.date);
+                document.getElementById("modal-id").textContent = item.id || "N/A";
+                document.getElementById("modal-reward").textContent = item.reward || "Contact Owner";
+                document.getElementById("modal-location").textContent = item.location;
+                
+                document.getElementById("owner-name").textContent = item.owner_name || item.ownerName;
+                document.getElementById("owner-email").textContent = item.owner_email || item.ownerEmail;
+                document.getElementById("owner-phone").textContent = item.owner_phone || item.ownerPhone;
+                document.getElementById("owner-info").style.display = "none";
+            };
+
+            container.prepend(card);
+        });
+
+        //  FIX: Data render hone ke thodi der baad displayItems chalayenge
+        setTimeout(() => {
+            displayItems();
+        }, 100);
+    }
+
+    function displayItems() {
+        let items = document.querySelectorAll(".item-card");
+        let start = (currentPage - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+        items.forEach((item, index) => {
+            item.style.display = (index >= start && index < end) ? "flex" : "none";
+        });
+        createPagination(items.length);
+    }
+
+    function createPagination(totalItems) {
+        let totalPages = Math.ceil(totalItems / itemsPerPage);
+        let pagination = document.getElementById("pagination");
+        if (!pagination) return; 
+        pagination.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+            let btn = document.createElement("button");
+            btn.textContent = i;
+            if (i === currentPage) { btn.style.background = "#333"; btn.style.color = "#fff"; }
+            btn.onclick = function () { currentPage = i; displayItems(); };
+            pagination.appendChild(btn);
+        }
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        let date = new Date(dateString);
+        return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    const modal = document.getElementById("itemModal");
+
+    document.querySelector(".contact-btn").onclick = () => {
+        const box = document.getElementById("owner-info");
+        box.style.display = box.style.display === "block" ? "none" : "block";
+    };
+
+    function closeModal() { modal.style.display = "none"; document.body.style.overflow = "auto"; }
+    window.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+    function switchTab(tab) {
+        document.querySelectorAll(".tab").forEach((btn) => btn.classList.remove("active"));
+        document.querySelectorAll(".tabContent").forEach((c) => c.classList.remove("active"));
+        document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");
+        document.getElementById(tab).classList.add("active");
+    }
+
+    function searchCity() {
+        let input = document.getElementById("searchcity").value.toLowerCase();
+        let items = document.querySelectorAll(".item-card");
+        items.forEach(item => {
+            let name = item.querySelector("p").textContent.toLowerCase();
+            item.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+
+    function searchItem() {
+        let input = document.getElementById("search").value.toLowerCase();
+        let items = document.querySelectorAll(".item-card");
+        items.forEach(item => {
+            let name = item.querySelector("h3").textContent.toLowerCase();
+            item.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+
+    let colors = document.querySelectorAll("#colorFilter .color");
+    colors.forEach(color => {
+        color.addEventListener("click", function () {
+            colors.forEach(c => { c.classList.remove("active"); c.style.borderColor = "#eee"; });
+            this.classList.add("active");
+            this.style.border = "3px solid " + window.getComputedStyle(this).backgroundColor;
+            filterItems();
+        });
+    });
+
+    function filterItems() {
+        let selectedColor = document.querySelector("#colorFilter .active");
+        let color = selectedColor ? selectedColor.id : "";
+        let date = document.getElementById("dateFilter").value;
+        let selectedCategories = [];
+        document.querySelectorAll(".filter-section input[type='checkbox']:checked").forEach(cb => {
+            selectedCategories.push(cb.parentElement.textContent.trim().toLowerCase());
+        });
+
+        let items = document.querySelectorAll(".item-card");
+        items.forEach(item => {
+            let show = true;
+            if (selectedCategories.length && !selectedCategories.includes(item.dataset.category)) show = false;
+            if (color && item.dataset.color !== color) show = false;
+            let itemDate = parseInt(item.dataset.date);
+            if (date === "Past 24 hours" && itemDate > 1) show = false;
+            if (date === "Past Week" && itemDate > 7) show = false;
+            item.style.display = show ? "flex" : "none";
+        });
+    }
+
+    document.querySelectorAll("input[type='checkbox']").forEach(cb => cb.addEventListener("change", filterItems));
+    document.getElementById("dateFilter").addEventListener("change", filterItems);
+
+    let deleteIndex = null;
+    function openDeleteModal(index) { deleteIndex = index; document.getElementById("deleteModal").style.display = "flex"; }
+    function closeDeleteModal() { document.getElementById("deleteModal").style.display = "none"; }
+
+    // --- BULLETPROOF DELETE LOGIC ---
+    document.getElementById("confirmDelete").addEventListener("click", async function () {
+        if (deleteIndex !== null) {
+            let itemDeletedFromBackend = false;
+            
+            try {
+                // 1. Try fetching from Backend first
+                let res = await fetch('http://localhost:5000/get-items/lost');
+                if (res.ok) {
+                    let items = await res.json();
+                    let itemToDelete = items[deleteIndex];
+                    
+                    if (itemToDelete && itemToDelete.id) {
+                        let deleteRes = await fetch(`http://localhost:5000/delete-item/${itemToDelete.id}`, {
+                            method: 'DELETE'
+                        });
+                        if (deleteRes.ok) {
+                            itemDeletedFromBackend = true; // DB se ud gaya!
+                        }
+                    }
+                }
+            } catch (error) {
+                // Agar server offline hai, toh code yahan aayega aur fail nahi hoga
+                console.log("Backend error ya offline hai, Local Storage use ho raha hai...");
+            }
+
+            // 2. Agar DB se delete nahi ho paya ya offline hai, to LocalStorage update karo
+            if (!itemDeletedFromBackend) {
+                let lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+                if (lostItems.length > deleteIndex) {
+                    lostItems.splice(deleteIndex, 1);
+                    localStorage.setItem("lostItems", JSON.stringify(lostItems));
+                }
+            }
+
+            // 3. Modal close karke list wapas load kardo
+            closeDeleteModal();
+            fetchItemsFromDB(); 
+            deleteIndex = null; // Reset
+        }
+    });
+</script>
+</body>
+
+</html>

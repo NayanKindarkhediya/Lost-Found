@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lost & Found</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <div class="logo"><img src="All img/Lost logo.png" /></div>
+    <nav>
+      <a class="tab active" onclick="switchTab('Home')" href="Home.html">Home</a>
+      <a href="Lost.html">Lost Item</a>
+      <a href="Found.html">Found Item</a>
+      <a href="Profile.html">Profile</a>
+    </nav>
+    <div id="authButtons">
+      <a class="btn-login" href="Loginpage.html" id="loginBtn">Login</a>
+      <a class="btn-signup" href="signup.html" id="signupBtn">Sign Up</a>
+      <a class="btn-login" href="#" id="logoutBtn" onclick="logoutUser()">Log Out</a>
+    </div>
+  </header>
+  <section class="hero">
+    <h1>
+      Reuniting memories and Completing the story <br />
+      of every lost item
+    </h1>
+    <p><span id="text"></span></p>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Search items (e.g., iPhone, Keys, Wallet)" />
+    </div>
+
+    <div class="search-box" style="margin-top: 20px">
+      <a class="btn-primary" href="Lostreport.html">Report Lost Item</a>
+      <a class="btn-secondary" href="Foundreport.html">Report Found Item</a>
+    </div>
+  </section>
+
+  <div class="section-title">Latest Items</div>
+
+  <section class="items" id="homeItems"></section>
+  <div class="section-title">How it Works</div>
+  <section class="how-it-works">
+    <div class="step">
+      <img src="All img/Report.png" />
+      <h3>1. Report</h3>
+      <p>Create a detailed post about the item you lost or found.</p>
+    </div>
+    <div class="step">
+      <img src="All img/link.png" />
+      <h3>2. Match</h3>
+      <p>
+        Our smart algorithm suggests matches based on description and
+        location.
+      </p>
+    </div>
+    <div class="step">
+      <img src="All img/contact-us.png" />
+      <h3>3. Contact</h3>
+      <p>Securely message the other person to verify ownership.</p>
+    </div>
+  </section>
+  <section class="hom2">
+    <div class="hom2-img">
+      <img
+        src="All img/traveler-female-character-claim-her-bag-lost-found-luggage-office-airport-happy-passenger-lose-baggage-woman-receive-clutch-229154107.webp"
+        alt="Illustration" />
+    </div>
+    <div class="hom2-text">
+      <h1>Helping Lost Items Find <br> Their Way Home</h1>
+      <p id="storyBox">
+        At Lost Found, our mission is to support communities in recovering<br />lost
+        items through a safe and efficient platform designed for<br />simplicity
+        and trust. We believe that collaboration makes every<br />recovery
+        possible.
+      </p>
+      <button id="btn" onclick="showfullstory()" class="primary-btn">
+        Our Story
+      </button>
+    </div>
+  </section>
+
+  <div class="Story"></div>
+
+  <div class="Impact-text">
+    <h2 class="section-title">Our Community Impact</h2>
+    <p>
+      By bringing together communities and local businesses, we create a
+      reliable<br />network that helps safeguard and return your lost
+      belongings.
+    </p>
+  </div>
+  <section class="how-it-works">
+    <div class="step">
+      <img src="All img/handshake.png" />
+      <h3>Thousands Reunited</h3>
+      <p>
+        Over 10,000 items returned to their rightful owners since our launch
+        in.
+      </p>
+    </div>
+    <div class="step">
+      <img src="All img/social-services.png" />
+      <h3>Community Driven</h3>
+      <p>
+        Powered by helpful neighbors,local businesses<br />and transit
+        authorities working together.
+      </p>
+    </div>
+    <div class="step">
+      <img src="All img/cyber-security.png" />
+      <h3>Secure Process</h3>
+      <p>
+        Verified identities and moderated content ensure<br />safe exchanges
+        every time.
+      </p>
+    </div>
+  </section>
+  <footer>
+    <div id="center" class="Help">
+      <h3>Help</h3>
+      <li>Customer Support</li>
+      <li>Terms & Conditions</li>
+      <li>Privacy Policy</li>
+    </div>
+    <div class="Site">
+      <h3>Site</h3>
+      <li><a href="javascript:void(0)" onclick="scrollToTop()">Home</a></li>
+      <li><a href="Lost.html">Lost</a></li>
+      <li><a href="Found.html">Found</a></li>
+      <li><a href="Lostreport.html">Lost Report</a></li>
+      <li><a href="Foundreport.html">Found Report</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </div>
+    <img src="All img/Lost logo.png" />
+    <div id="center" class="Links">
+      <h3>Links</h3>
+      <li>Linkdin</li>
+      <li>Facebook</li>
+      <li>You Tube</li>
+      <li>About US</li>
+    </div>
+    <div class="Contact">
+      <h3>Contact</h3>
+      <li>
+        Call: <a href="call:+917859815617" style="color: green;">+91 7859815617</a>
+      </li>
+      <li>
+        WhatsApp: <a href="https://wa.me/917859815617" target="_blank" style="color: green;">+91 7859815617</a>
+      </li>
+      <li>Email: <a href="mailto:lostandfound@gmail.com">lostandfound@gmail.com</a></li>
+    </div>
+  </footer>
+  <div class="last-line">
+    <h3>© 2026 Lost & Found. All rights reserved.</h3>
+  </div>
+  <script src="script.js"></script>
+<script>
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function formatDate(dateString) {
+        let date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric", month: "short", day: "numeric",
+        });
+    }
+
+    function timeAgo(dateString) {
+        let now = new Date();
+        let past = new Date(dateString);
+        let seconds = Math.floor((now - past) / 1000);
+        let minutes = Math.floor(seconds / 60);
+        let hours = Math.floor(minutes / 60);
+        let days = Math.floor(hours / 24);
+
+        if (seconds < 60) return "Just now";
+        if (minutes < 60) return minutes + " min ago";
+        if (hours < 24) return hours + " hours ago";
+        return days + " days ago";
+    }
+
+    // --- DATABASE INTEGRATION START ---
+    let allItems = []; 
+    let currentItems = [];
+    let startIndex = 0;
+    let container = document.getElementById("homeItems");
+
+    // Function to fetch data from Database
+    async function fetchAllItemsFromDB() {
+        try {
+            const [lostRes, foundRes] = await Promise.all([
+                fetch('http://localhost:5000/get-items/lost'),
+                fetch('http://localhost:5000/get-items/found')
+            ]);
+
+            let lostData = await lostRes.json();
+            let foundData = await foundRes.json();
+
+            //data merge karvo 
+            lostData.forEach(item => item.type = "Lost");
+            foundData.forEach(item => item.type = "Found");
+
+            allItems = [...lostData, ...foundData];
+
+            // Latest items first (Database column is date_report)
+            allItems.sort((a, b) => new Date(b.date_report) - new Date(a.date_report));
+
+            if (allItems.length > 0) {
+                renderHomeItems();
+                // Start the 3-second roll effect only after data is loaded
+                setInterval(renderHomeItems, 3000);
+            }
+        } catch (err) {
+            console.error("Database connection error:", err);
+            /* FALLBACK TO LOCALSTORAGE IF DB FAILS */
+            let lItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+            let fItems = JSON.parse(localStorage.getItem("foundItems")) || [];
+            lItems.forEach(i => i.type = "Lost");
+            fItems.forEach(i => i.type = "Found");
+            allItems = [...lItems, ...fItems];
+            renderHomeItems();
+            setInterval(renderHomeItems, 3000);
+        }
+    }
+
+    fetchAllItemsFromDB();
+
+    function renderHomeItems() {
+        container.innerHTML = "";
+        currentItems = [];
+        let total = allItems.length;
+        if (total === 0) return;
+
+        for (let i = 0; i < Math.min(4, total); i++) {
+            let index = (startIndex + i) % total;
+            let item = allItems[index];
+            currentItems.push(item);
+
+            let card = document.createElement("div");
+            card.className = "item";
+            card.style.maxWidth = "400px";
+            card.style.margin = "auto";
+
+            card.onclick = function () {
+                window.location.href = item.type === "Lost" ? "Lost.html" : "Found.html";
+            };
+
+            // Mapping DB columns: item_name -> name, image_data -> img
+            card.innerHTML = `
+                <div style="background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); padding:10px; min-height:300px; opacity:0; transform:translateY(10px); transition:0.5s;">
+                    <div style="position:relative;">
+                        <img src="${item.image_data || item.img || 'All img/1.jpg'}" style="margin-top:20px; width:180px; height:180px; object-fit:cover; border-radius:10px;">
+                        <span style="position:absolute; top:-3px; left:2px; background:${item.type === "Lost" ? "#e53935" : "#4caf50"}; color:white; padding:3px 8px; font-size:11px; font-weight:bold; border-radius:5px;">
+                            ${item.type.toUpperCase()}
+                        </span>
+                    </div>
+                    <h3 style="font-size:15px;margin:30px 0px 20px;font-weight:600;">
+                        ${item.item_name || item.name}
+                    </h3>
+                    <p style="font-size:13px;color:#777;margin:0;">
+                        • ${item.location} <br><br>
+                        • ${timeAgo(item.date_report || item.date)}
+                    </p>
+                </div>
+            `;
+            container.appendChild(card);
+
+            setTimeout(() => {
+                card.firstElementChild.style.opacity = "1";
+                card.firstElementChild.style.transform = "translateY(0)";
+            }, 50);
+        }
+        startIndex = (startIndex + 1) % total;
+    }
+
+    // --- SEARCH FUNCTIONALITY ---
+    document.getElementById("search").addEventListener("input", function () {
+        let value = this.value.toLowerCase();
+        if (value === "") {
+            renderHomeItems();
+            return;
+        }
+
+        let filtered = allItems.filter(item => 
+            (item.item_name || item.name || "").toLowerCase().includes(value) ||
+            (item.location || "").toLowerCase().includes(value)
+        );
+
+        container.innerHTML = "";
+        filtered.forEach(item => {
+            let card = document.createElement("div");
+            card.className = "item";
+            card.innerHTML = `
+                <div style="background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); padding:10px; min-height:300px; opacity:1; transform:translateY(0);">
+                    <div style="position:relative;">
+                        <img src="${item.image_data || item.img || 'All img/1.jpg'}" style="margin-top:20px; width:180px; height:180px; object-fit:cover; border-radius:10px;">
+                        <span style="position:absolute; top:-3px; left:2px; background:${item.type === "Lost" ? "#e53935" : "#4caf50"}; color:white; padding:3px 8px; font-size:11px; font-weight:bold; border-radius:5px;">
+                            ${item.type.toUpperCase()}
+                        </span>
+                    </div>
+                    <h3 style="font-size:15px;margin:30px 0px 20px;font-weight:600;">
+                        ${item.item_name || item.name}
+                    </h3>
+                    <p style="font-size:13px;color:#777;margin:0;">
+                        • ${item.location} <br><br>
+                        • ${timeAgo(item.date_report || item.date)}
+                    </p>
+                </div>`;
+            container.appendChild(card);
+        });
+    });
+</script>
+</body>
+
+</html>
