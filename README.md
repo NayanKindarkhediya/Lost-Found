@@ -1,5 +1,5 @@
 <div align="center">
-<img src="frontend/All%20img/Lost%20logo.png" alt="Lost & Found Logo" width="110" />
+<img src="lost logo.png" alt="Lost & Found Logo" width="110" />
 # Lost & Found
  
 **Reconnect lost items with their owners.**
